@@ -1,0 +1,1 @@
+export const isZero = (x: number): boolean => x === 0;
