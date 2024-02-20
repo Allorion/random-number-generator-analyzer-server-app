@@ -256,7 +256,7 @@ export class BookStackTest {
 //                 "resultPValue": "SUCCESS"
 //             }
 //         ],
-//         "nameFile": "cryptoSequence:1000000:19.02.2024, 09:55:35.txt",
+//         "nameFile": "crypto.txt",
 //         "blockSize": 2,
 //         "bitstreams": 10,
 //         "numberOfBits": 100000,

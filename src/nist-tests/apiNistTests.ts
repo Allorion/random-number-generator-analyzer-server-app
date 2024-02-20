@@ -8,7 +8,6 @@ import {longestRunOfOnes} from "./nist-sts/longestRunOfOnes";
 import {rankTest} from "./nist-sts/rankTest";
 import {generateUniqueId} from "../global-elements/functions/generateUniqueId";
 import {combinePValues} from "./scripts/combinePValues";
-import {removeSpacesFromFile} from "../global-elements/functions/removeSpacesFromFile";
 import {readTextFromFile} from "../global-elements/functions/readTextFromFile";
 import {FILE_DIRECTORY} from "../global-elements/fileDirectory";
 
@@ -79,8 +78,6 @@ const startNistTests = async (data: INistTestsPostData, index: number): Promise<
         uid: generateUniqueId(),
         numberOfBits: data.numberOfBits
     }
-
-    await removeSpacesFromFile(data.nameFile, FILE_DIRECTORY)
 
     const listPValues: IListPValue = {}
 

@@ -1,7 +1,6 @@
 import express from "express";
 import {IPostDataStackOfBooks, IRespDataStackOfBooks, IResultBookStackTest} from "./types/TypeStackOfBooks";
 import {BookStackTest} from "./stack-of-books/BookStackTest";
-import {removeSpacesFromFile} from "../global-elements/functions/removeSpacesFromFile";
 import {readTextFromFile} from "../global-elements/functions/readTextFromFile";
 import {FILE_DIRECTORY} from "../global-elements/fileDirectory";
 
@@ -46,9 +45,6 @@ const startBookStackTest = async (dataTest: IPostDataStackOfBooks, indexTest: nu
     bookStackTest.alpha = dataTest.alpha;
 
     const listResult: IResultBookStackTest[] = []
-
-    // Удаляем все пробелы из файла
-    await removeSpacesFromFile(dataTest.nameFile, FILE_DIRECTORY)
 
     for (let i = 0; i < dataTest.bitstreams; i++) {
 

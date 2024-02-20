@@ -10,7 +10,6 @@ import {
     generateCryptoSequence,
 } from "../scripts/cryptoGetRandomValuesGenerate";
 
-
 const router = express.Router()
 
 const generation = (
@@ -29,7 +28,7 @@ const generation = (
 
     if (postData.length > 0 && postData.length <= 1000000000) {
         try {
-            const filePath = `${method}:${postData.length}:${new Date().toLocaleString('ru')}.txt`;
+            const filePath = `${method}:${postData.length}:${new Date().toLocaleString('ru')}.bin`;
             let result: { flag: boolean, text: string } | undefined = undefined
 
             switch (method) {

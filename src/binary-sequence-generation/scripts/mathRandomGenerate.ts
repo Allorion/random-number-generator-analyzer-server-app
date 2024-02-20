@@ -1,19 +1,46 @@
 //**********************************************************************************************************************
-// Скрип для генерации файла с бинарной последовательностью с помощью модуля Match.random
+// Скрип для генерации файла с бинарной последовательностью с возможностью выбора вероятности появления единиц и нулей
 //**********************************************************************************************************************
 
-
 import * as fs from 'fs';
+import {saveBinFile} from "./dop-scripts/saveBinFile";
 
-function generateBinarySequenceChunk(length: number): string {
-    let binarySequence = '';
+// Функция, которая генерирует буфер из единиц и нулей заданной длины и частоты
+function generateBinarySequenceChunk(length: number, frequency: number): Buffer {
+    // Создаем буфер нужного размера, используя Buffer.alloc
+    const buffer = Buffer.alloc(Math.ceil(length / 8));
+    // Создаем переменную для хранения текущего байта
+    let byte = 0;
+    // Создаем переменную для хранения текущего смещения в буфере
+    let offset = 0;
+    // Проходим по длине последовательности
     for (let i = 0; i < length; i++) {
-        binarySequence += Math.random() < 0.5 ? '0' : '1';
+        // Генерируем случайный бит, используя Math.random и frequency
+        const bit = Math.random() < frequency ? 0 : 1;
+        // Добавляем бит к текущему байту, сдвигая его на один разряд влево
+        byte = (byte << 1) | bit;
+        // Проверяем, если мы сгенерировали 8 бит, то есть один байт
+        if ((i + 1) % 8 === 0) {
+            // Записываем байт в буфер, используя writeUInt8 и указывая смещение
+            buffer.writeUInt8(byte, offset);
+            // Обнуляем байт
+            byte = 0;
+            // Увеличиваем смещение на 1
+            offset++;
+        }
     }
-    return binarySequence;
+    // Проверяем, если остались незаполненные биты в последнем байте
+    if (length % 8 !== 0) {
+        // Сдвигаем байт на нужное количество разрядов влево, чтобы заполнить нулями
+        byte = byte << (8 - length % 8);
+        // Записываем байт в буфер, используя writeUInt8 и указывая смещение
+        buffer.writeUInt8(byte, offset);
+    }
+    // Возвращаем буфер
+    return buffer;
 }
 
-export function mathRandomGenerate(length: number, frequency: number | undefined, filePath: string): {
+export function mathRandomGenerate(length: number, frequency: number = 0.5, filePath: string): {
     flag: boolean,
     text: string
 } {
@@ -22,11 +49,10 @@ export function mathRandomGenerate(length: number, frequency: number | undefined
 
     try {
         for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-            const binarySequence = generateBinarySequenceChunk(chunkSize);
-            fs.appendFileSync(filePath, binarySequence);
-            if (chunkIndex < totalChunks - 1) {
-                fs.appendFileSync(filePath, '\n'); // Добавить новую строку после каждой порции
-            }
+            // Генерируем буфер из единиц и нулей, используя функцию generateBinarySequenceChunk
+            const buffer = generateBinarySequenceChunk(chunkSize, frequency);
+            // Используем функцию saveBinFile вместо saveBinFileHex
+            saveBinFile(buffer, filePath);
         }
         return {
             flag: true,
