@@ -1,5 +1,4 @@
 import express from "express";
-import fs from "fs";
 import {IListPValue, INistTestsPostData, INistTestsRespData} from "./types/INistTestTypes";
 import {frequencyTest} from "./nist-sts/frequencyTest";
 import {blockFrequency} from "./nist-sts/blockFrequency";
@@ -9,12 +8,11 @@ import {longestRunOfOnes} from "./nist-sts/longestRunOfOnes";
 import {rankTest} from "./nist-sts/rankTest";
 import {generateUniqueId} from "../global-elements/functions/generateUniqueId";
 import {combinePValues} from "./scripts/combinePValues";
+import {removeSpacesFromFile} from "../global-elements/functions/removeSpacesFromFile";
+import {readTextFromFile} from "../global-elements/functions/readTextFromFile";
+import {FILE_DIRECTORY} from "../global-elements/fileDirectory";
 
 const router = express.Router()
-
-
-const FILE_DIRECTORY = `/Users/allori/Documents/Projects/graduate-work-nist-tests/app-server/src/binary-sequence-generation/storage-files/`
-
 
 const checkReqData = (elem: INistTestsPostData, index: number, warning: string[]) => {
 
@@ -30,8 +28,8 @@ const checkReqData = (elem: INistTestsPostData, index: number, warning: string[]
         warning.push(`В ${index} элементе запроса отсутствует alpha`)
     }
 
-    if (elem.alpha < 0.1 && elem.alpha > 0.5) {
-        warning.push(`В ${index} элементе запроса должна иметь значение  0.1 <= alpha <= 0.5`)
+    if (elem.alpha < 0.001 && elem.alpha > 0.1) {
+        warning.push(`В ${index} элементе запроса должна иметь значение  0.001 <= alpha <= 0.1`)
     }
 
     if (elem.bitstreams === undefined || elem.bitstreams === null) {
@@ -69,44 +67,6 @@ const checkReqData = (elem: INistTestsPostData, index: number, warning: string[]
     }
 }
 
-// Функция для чтения текста из файла по индексу и количеству символов
-const readTextFromFile = async (index: number, length: number, nameFile: string) => {
-    return new Promise((resolve: (value: number[]) => void): void => { // Изменить типы здесь
-        // Создаем поток для чтения файла
-        const stream = fs.createReadStream(FILE_DIRECTORY + nameFile, {
-            // Указываем кодировку файла
-            encoding: "utf-8",
-            // Указываем начальную и конечную позицию в байтах
-            start: index,
-            end: index + length - 1,
-            highWaterMark: 256 * 1024
-        });
-        // Объявляем переменную для хранения результата
-        let result: number[] = [];
-        // Подписываемся на событие 'data', которое срабатывает при получении части данных
-        stream.on("data", (chunk: string) => {
-            // Добавляем часть данных к результату
-            result = chunk.split("").map((s) => Number(s));
-        });
-
-        // Подписываемся на событие 'end', которое срабатывает при окончании чтения файла
-        stream.on("end", () => {
-            // Возвращаем результат
-            resolve(result); // Использовать resolve здесь
-        });
-    })
-}
-
-const removeSpacesFromFile = async (fileName: string) => {
-    // Читаем содержимое файла в виде строки
-    const text = fs.readFileSync(FILE_DIRECTORY + fileName, "utf8");
-    // Удаляем все пробелы из строки с помощью регулярного выражения
-    const newText = text.replace(/\s/g, ""); // \s - регулярное выражение для пробелов
-    // Перезаписываем файл с новым текстом
-    fs.writeFileSync(FILE_DIRECTORY + fileName, newText, "utf8");
-}
-
-
 const startNistTests = async (data: INistTestsPostData, index: number): Promise<INistTestsRespData> => {
 
     const listResult: INistTestsRespData = {
@@ -120,13 +80,13 @@ const startNistTests = async (data: INistTestsPostData, index: number): Promise<
         numberOfBits: data.numberOfBits
     }
 
-    await removeSpacesFromFile(data.nameFile)
+    await removeSpacesFromFile(data.nameFile, FILE_DIRECTORY)
 
     const listPValues: IListPValue = {}
 
     for (let i = 0; i < data.bitstreams; i++) {
 
-        let bitsLine: number[] = await readTextFromFile(data.numberOfBits * i, data.numberOfBits, data.nameFile)
+        let bitsLine: number[] = await readTextFromFile(data.numberOfBits * i, data.numberOfBits, data.nameFile, FILE_DIRECTORY)
 
         data.listTests.map((test, indexTest) => {
 
@@ -255,8 +215,9 @@ router.post('/start-analysis', async (req, res) => {
 
     let resData: INistTestsRespData[] = []
 
+    const warning: string[] = []
+
     try {
-        const warning: string[] = []
 
         reqData.forEach((elem, index) => {
             checkReqData(elem, index, warning)

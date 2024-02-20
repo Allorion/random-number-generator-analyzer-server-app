@@ -14,6 +14,7 @@ app.use(bodyParser.json());
 app.use('/api/binary-sequence-generation', require('./src/binary-sequence-generation/api/binarySequenceGeneration'));
 app.use('/api/files-binary-sequence', require('./src/files-binary-sequence/api/apiFilesBinarySequence'));
 app.use('/api/nist-tests', require('./src/nist-tests/apiNistTests'));
+app.use('/api/stack-of-books-tests', require('./src/stack-of-books-test/apiStackOfBooksTest'));
 
 const port = process.env.PORT || 3001;
 app.listen(port, () => {
