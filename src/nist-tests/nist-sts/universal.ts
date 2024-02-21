@@ -14,6 +14,7 @@ export interface IUniversal {
     "i": number | undefined,
     "pValue": number,
     "result": "FAILURE" | "SUCCESS",
+    error: string | null
 }
 
 export const universal = (bitsLine: number[], n: number, ALPHA: number = 0.05): IUniversal => {
@@ -57,7 +58,8 @@ export const universal = (bitsLine: number[], n: number, ALPHA: number = 0.05): 
         return {
             d: undefined, e: undefined, f: undefined, g: undefined, h: undefined, i: undefined,
             a: undefined, b: undefined, c: undefined, pValue: 0, result: 'FAILURE',
-            warning: `УНИВЕРСАЛЬНЫЙ СТАТИСТИЧЕСКИЙ ТЕСТ: ОШИБКА: L НАХОДИТСЯ ВНЕ ДИАПАЗОНА. -ИЛИ- : Q МЕНЬШЕ ${10 * Math.pow(2, L)}. -ИЛИ- : Не удается выделить T.`
+            warning: undefined,
+            error: `УНИВЕРСАЛЬНЫЙ СТАТИСТИЧЕСКИЙ ТЕСТ: ОШИБКА: L НАХОДИТСЯ ВНЕ ДИАПАЗОНА. -ИЛИ- : Q МЕНЬШЕ ${10 * Math.pow(2, L)}. -ИЛИ- : Не удается выделить T.`
         }
     }
 
@@ -95,6 +97,7 @@ export const universal = (bitsLine: number[], n: number, ALPHA: number = 0.05): 
         i: n - (Q + K) * L,
         pValue: p_value,
         result: p_value < ALPHA ? "FAILURE" : "SUCCESS",
+        error: null,
         "warning": (isNegative(p_value) || isGreaterThanOne(p_value)) ? 'ПРЕДУПРЕЖДЕНИЕ: Значение P_VALUE находится вне диапазона.' : undefined,
     }
 }

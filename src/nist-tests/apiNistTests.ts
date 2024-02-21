@@ -57,15 +57,15 @@ const checkReqData = (elem: INistTestsPostData, index: number, warning: string[]
             elem.listTests.forEach(test => {
                 if (test === 'blockFrequency' && elem.dopParams?.bftParam === undefined) {
                     warning.push(`В ${index} элементе запроса отсутствует длина блока Block Frequency Test`)
-                } else if (test === 'nonOverlappingTemplateMatchings') {
+                } else if (test === 'nonOverlappingTemplateMatchings' && elem.dopParams?.nottParam === undefined) {
                     warning.push(`В ${index} элементе запроса отсутствует длина блока NonOverlapping Template Test`)
                 } else if (test === 'overlappingTemplateMatchings' && elem.dopParams?.ottParam === undefined) {
                     warning.push(`В ${index} элементе запроса отсутствует длина блока Overlapping Template Test`)
-                } else if (test === 'approximateEntropy') {
+                } else if (test === 'approximateEntropy' && elem.dopParams?.aetParam === undefined) {
                     warning.push(`В ${index} элементе запроса отсутствует длина блока Approximate Entropy Test`)
-                } else if (test === 'serialTest') {
+                } else if (test === 'serialTest' && elem.dopParams?.stParam === undefined) {
                     warning.push(`В ${index} элементе запроса отсутствует длина блока Serial Test`)
-                } else if (test === 'linearComplexity') {
+                } else if (test === 'linearComplexity' && elem.dopParams?.lctParam === undefined) {
                     warning.push(`В ${index} элементе запроса отсутствует длина блока Linear Complexity Test`)
                 }
             })
@@ -310,6 +310,14 @@ const startNistTests = async (data: INistTestsPostData, index: number): Promise<
             listResult.combinePValue.cumulativeSums.forward = combinePValues(value.forward)
             //@ts-ignore
             listResult.combinePValue.cumulativeSums.backwards = combinePValues(value.backwards)
+        } else if (key === 'serialTest') {
+            const list1: number[] = []
+            const list2: number[] = []
+            value.map((opt: number[]) => {
+                list1.push(opt[0])
+                list2.push(opt[1])
+            })
+            listResult.combinePValue.serialTest = [combinePValues(list1), combinePValues(list2)]
         } else {
             //@ts-ignore
             listResult.combinePValue[key] = combinePValues(value)
@@ -352,6 +360,7 @@ router.post('/start-analysis', async (req, res) => {
 
 
     } catch (e) {
+        console.log(e)
         res.status(500).json(e)
     }
 

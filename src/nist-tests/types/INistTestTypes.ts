@@ -47,12 +47,7 @@ export type INameTests =
     'randomExcursions' |
     'randomExcursionsVariant' |
     'serialTest' |
-    'linearComplexity' |
-    'universalStatisticalTest' |
-    'cumulativeSumsForwardTest' |
-    'cumulativeSumsBackwardTest' |
-    'randomExcursionTest' |
-    'randomExcursionVariantTest'
+    'linearComplexity'
 
 
 interface IDopParams {
@@ -84,8 +79,6 @@ export interface ICombinePValue {
     overlappingTemplateMatchings?: number,
     universal?: number,
     approximateEntropy?: number,
-    randomExcursions?: number,
-    randomExcursionsVariant?: number,
     serialTest?: [number, number],
     linearComplexity?: number,
 }
