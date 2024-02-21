@@ -9,7 +9,7 @@ export interface IResBlockFrequency {
     "result": "FAILURE" | "SUCCESS",
 }
 
-export const blockFrequency = (bitsLine: number[], n: number, M: number = 128, ALPHA: number = 0.1): IResBlockFrequency => {
+export const blockFrequency = (bitsLine: number[], n: number, M: number = 128, ALPHA: number=0.05): IResBlockFrequency => {
 
     const N = Math.floor(n / M);
     let sum = 0;

@@ -4,6 +4,33 @@ import {IResRunsTest} from "../nist-sts/runTest";
 import {IResRankTest} from "../nist-sts/rankTest";
 import {IResLongestRunOfOnes} from "../nist-sts/longestRunOfOnes";
 import {IResBlockFrequency} from "../nist-sts/blockFrequency";
+import {IOverlappingTemplateMatchings} from "../nist-sts/overlappingTemplateMatchings";
+import {IUniversal, universal} from "../nist-sts/universal";
+import {approximateEntropy, IApproximateEntropy} from "../nist-sts/approximateEntropy";
+import {IListResultRandomExcursions, IRandomExcursions, randomExcursions} from "../nist-sts/randomExcursions";
+import {
+    IListResultRandomExcursionsVariant,
+    IRandomExcursionsVariant,
+    randomExcursionsVariant
+} from "../nist-sts/randomExcursionsVariant";
+import {ISerialTest, serialTest} from "../nist-sts/serialTest";
+import {ILinearComplexity, linearComplexity} from "../nist-sts/linearComplexity";
+
+// [01] Frequency
+// [02] Block Frequency
+// [03] Cumulative Sums
+// [04] Runs
+// [05] Longest Run of Ones
+// [06] Rank
+// [07] Discrete Fourier Transform (надо доделать)
+// [08] Nonperiodic Template Matchings (надо доделать)
+// [09] Overlapping Template Matchings
+// [10] Universal Statistical
+// [11] Approximate Entropy
+// [12] Random Excursions
+// [13] Random Excursions Variant
+// [14] Serial
+// [15] Linear Complexity
 
 export type INameTests =
     'frequencyTest' |
@@ -53,6 +80,14 @@ export interface ICombinePValue {
     runTest?: number,
     longestRunOfOnes?: number,
     rankTest?: number,
+
+    overlappingTemplateMatchings?: number,
+    universal?: number,
+    approximateEntropy?: number,
+    randomExcursions?: number,
+    randomExcursionsVariant?: number,
+    serialTest?: [number, number],
+    linearComplexity?: number,
 }
 
 export interface IListPValue {
@@ -62,6 +97,14 @@ export interface IListPValue {
     runTest?: number[],
     longestRunOfOnes?: number[],
     rankTest?: number[],
+
+    overlappingTemplateMatchings?: number[],
+    universal?: number[],
+    approximateEntropy?: number[],
+    randomExcursions?: IListResultRandomExcursions[],
+    randomExcursionsVariant?: IListResultRandomExcursionsVariant[][],
+    serialTest?: [number, number][],
+    linearComplexity?: number[],
 }
 
 export interface INistTestsRespData {
@@ -80,6 +123,14 @@ export interface INistTestsRespData {
     runTest?: Array<IResRunsTest | string>,
     longestRunOfOnes?: Array<IResLongestRunOfOnes | string>,
     rankTest?: Array<IResRankTest | string>,
+
+    overlappingTemplateMatchings?: Array<IOverlappingTemplateMatchings | string>,
+    universal?: Array<IUniversal | string>,
+    approximateEntropy?: Array<IApproximateEntropy | string>,
+    randomExcursions?: Array<IRandomExcursions | string>,
+    randomExcursionsVariant?: Array<IRandomExcursionsVariant | string>,
+    serialTest?: Array<ISerialTest | string>,
+    linearComplexity?: Array<ILinearComplexity | string>,
     combinePValue: ICombinePValue,
     uid: string,
 }

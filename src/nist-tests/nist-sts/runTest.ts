@@ -8,7 +8,7 @@ export interface IResRunsTest {
     "result": "FAILURE" | "SUCCESS" | undefined,
 }
 
-export const runTest = (bitsLine: number[], n: number, ALPHA: number = 0.1): IResRunsTest => {
+export const runTest = (bitsLine: number[], n: number, ALPHA: number=0.05): IResRunsTest => {
 
     let sum: number = 0
 

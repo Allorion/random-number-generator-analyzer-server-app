@@ -13,6 +13,5 @@ export function saveBinFile(buffer: Buffer, fileName: string) {
             console.error(err);
             return;
         }
-        console.log('Файл успешно записан!');
     });
 }

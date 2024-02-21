@@ -8,7 +8,7 @@ export interface IResFrequency {
     "result": "FAILURE" | "SUCCESS",
 }
 
-export const frequencyTest = (bitsLine: number[], n: number, ALPHA: number = 0.1): IResFrequency => {
+export const frequencyTest = (bitsLine: number[], n: number, ALPHA: number=0.05): IResFrequency => {
 
     const sqrt2 = 1.41421356237309504880
 

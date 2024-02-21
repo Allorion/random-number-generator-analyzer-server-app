@@ -18,7 +18,7 @@ export interface IResRankTest {
     "result": "FAILURE" | "SUCCESS",
 }
 
-export const rankTest = (bitsLine: number[], n: number, ALPHA: number = 0.1): IResRankTest => {
+export const rankTest = (bitsLine: number[], n: number, ALPHA: number=0.05): IResRankTest => {
 
     const M: 32 = 32;
     const Q: 32 = 32;

@@ -16,7 +16,7 @@ export interface IResLongestRunOfOnes {
     "result": "FAILURE" | "SUCCESS",
 }
 
-export const longestRunOfOnes = (bitsLine: number[], n: number, ALPHA: number): IResLongestRunOfOnes => {
+export const longestRunOfOnes = (bitsLine: number[], n: number, ALPHA: number=0.05): IResLongestRunOfOnes => {
 
     let K: number = 0;
     let M: number = 0;

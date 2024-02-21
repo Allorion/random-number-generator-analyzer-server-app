@@ -22,7 +22,7 @@ export interface IResCumulativeSums {
 }
 
 
-export const cumulativeSums = (bitsLine: number[], n: number, ALPHA: number = 0.1): IResCumulativeSums => {
+export const cumulativeSums = (bitsLine: number[], n: number, ALPHA: number=0.05): IResCumulativeSums => {
 
     let S = 0;
     let sup = 0;

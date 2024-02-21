@@ -10,6 +10,13 @@ import {generateUniqueId} from "../global-elements/functions/generateUniqueId";
 import {combinePValues} from "./scripts/combinePValues";
 import {readTextFromFile} from "../global-elements/functions/readTextFromFile";
 import {FILE_DIRECTORY} from "../global-elements/fileDirectory";
+import {overlappingTemplateMatchings} from "./nist-sts/overlappingTemplateMatchings";
+import {universal} from "./nist-sts/universal";
+import {approximateEntropy} from "./nist-sts/approximateEntropy";
+import {randomExcursions} from "./nist-sts/randomExcursions";
+import {randomExcursionsVariant} from "./nist-sts/randomExcursionsVariant";
+import {serialTest} from "./nist-sts/serialTest";
+import {linearComplexity} from "./nist-sts/linearComplexity";
 
 const router = express.Router()
 
@@ -52,7 +59,7 @@ const checkReqData = (elem: INistTestsPostData, index: number, warning: string[]
                     warning.push(`В ${index} элементе запроса отсутствует длина блока Block Frequency Test`)
                 } else if (test === 'nonOverlappingTemplateMatchings') {
                     warning.push(`В ${index} элементе запроса отсутствует длина блока NonOverlapping Template Test`)
-                } else if (test === 'overlappingTemplateMatchings') {
+                } else if (test === 'overlappingTemplateMatchings' && elem.dopParams?.ottParam === undefined) {
                     warning.push(`В ${index} элементе запроса отсутствует длина блока Overlapping Template Test`)
                 } else if (test === 'approximateEntropy') {
                     warning.push(`В ${index} элементе запроса отсутствует длина блока Approximate Entropy Test`)
@@ -182,6 +189,113 @@ const startNistTests = async (data: INistTestsPostData, index: number): Promise<
                         listResult.rankTest.push(result)
                     } catch (e) {
                         listResult.rankTest.push(`Ошибка выполнения теста! ${e}`)
+                    }
+                    break
+
+
+                case "overlappingTemplateMatchings":
+                    if (listResult.overlappingTemplateMatchings === undefined) {
+                        listResult.overlappingTemplateMatchings = []
+                    }
+                    if (listPValues.overlappingTemplateMatchings === undefined) {
+                        listPValues.overlappingTemplateMatchings = []
+                    }
+                    try {
+                        const result = overlappingTemplateMatchings(bitsLine, data.numberOfBits, data.dopParams?.ottParam, data.alpha)
+                        listPValues.overlappingTemplateMatchings.push(result.pValue)
+                        listResult.overlappingTemplateMatchings.push(result)
+                    } catch (e) {
+                        listResult.overlappingTemplateMatchings.push(`Ошибка выполнения теста! ${e}`)
+                    }
+                    break
+                case "universal":
+                    if (listResult.universal === undefined) {
+                        listResult.universal = []
+                    }
+                    if (listPValues.universal === undefined) {
+                        listPValues.universal = []
+                    }
+                    try {
+                        const result = universal(bitsLine, data.numberOfBits, data.alpha)
+                        listPValues.universal.push(result.pValue)
+                        listResult.universal.push(result)
+                    } catch (e) {
+                        listResult.universal.push(`Ошибка выполнения теста! ${e}`)
+                    }
+                    break
+                case "approximateEntropy":
+                    if (listResult.approximateEntropy === undefined) {
+                        listResult.approximateEntropy = []
+                    }
+                    if (listPValues.approximateEntropy === undefined) {
+                        listPValues.approximateEntropy = []
+                    }
+                    try {
+                        const result = approximateEntropy(bitsLine, data.numberOfBits, data.dopParams?.aetParam, data.alpha)
+                        listPValues.approximateEntropy.push(result.pValue)
+                        listResult.approximateEntropy.push(result)
+                    } catch (e) {
+                        listResult.approximateEntropy.push(`Ошибка выполнения теста! ${e}`)
+                    }
+                    break
+                case "randomExcursions":
+                    if (listResult.randomExcursions === undefined) {
+                        listResult.randomExcursions = []
+                    }
+                    if (listPValues.randomExcursions === undefined) {
+                        listPValues.randomExcursions = []
+                    }
+                    try {
+                        const result = randomExcursions(bitsLine, data.numberOfBits, data.alpha)
+                        listPValues.randomExcursions = result.listResult
+                        listResult.randomExcursions.push(result)
+                    } catch (e) {
+                        listResult.randomExcursions.push(`Ошибка выполнения теста! ${e}`)
+                    }
+                    break
+                case "randomExcursionsVariant":
+                    if (listResult.randomExcursionsVariant === undefined) {
+                        listResult.randomExcursionsVariant = []
+                    }
+                    if (listPValues.randomExcursionsVariant === undefined) {
+                        listPValues.randomExcursionsVariant = []
+                    }
+                    try {
+                        const result = randomExcursionsVariant(bitsLine, data.numberOfBits, data.alpha)
+                        listPValues.randomExcursionsVariant.push(result.listResult)
+                        listResult.randomExcursionsVariant.push(result)
+                    } catch (e) {
+                        listResult.randomExcursionsVariant.push(`Ошибка выполнения теста! ${e}`)
+                    }
+                    break
+                case "serialTest":
+                    if (listResult.serialTest === undefined) {
+                        listResult.serialTest = []
+                    }
+                    if (listPValues.serialTest === undefined) {
+                        listPValues.serialTest = []
+                    }
+                    try {
+                        const result = serialTest(bitsLine, data.numberOfBits, data.dopParams?.stParam, data.alpha)
+                        listPValues.serialTest.push(result.pValue)
+                        listResult.serialTest.push(result)
+                    } catch (e) {
+                        listResult.serialTest.push(`Ошибка выполнения теста! ${e}`)
+                    }
+                    break
+                case "linearComplexity":
+                    if (listResult.linearComplexity === undefined) {
+                        listResult.linearComplexity = []
+                    }
+                    if (listPValues.linearComplexity === undefined) {
+                        listPValues.linearComplexity = []
+                    }
+                    try {
+                        const result = linearComplexity(bitsLine, data.numberOfBits, data.dopParams?.lctParam, data.alpha)
+                        listPValues.linearComplexity.push(result.pValue)
+                        listResult.linearComplexity.push(result)
+                    } catch (e) {
+                        listResult.linearComplexity.push(`Ошибка выполнения теста! ${e}`)
                     }
                     break
             }
