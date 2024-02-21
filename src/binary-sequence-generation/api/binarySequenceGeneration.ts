@@ -26,7 +26,7 @@ const generation = (
         method: method
     };
 
-    if (postData.length > 0 && postData.length <= 1000000000) {
+    if (postData.length > 0 && postData.length <= 10000000000) {
         try {
             const filePath = `${method}:${postData.length}:${new Date().toLocaleString('ru')}.bin`;
             let result: { flag: boolean, text: string } | undefined = undefined
@@ -59,7 +59,7 @@ const generation = (
             res.text = 'Ошибка при сохранении последовательности';
         }
     } else {
-        res.text = 'Длина последовательности должна быть больше 0 и меньше 1 миллиарда';
+        res.text = 'Длина последовательности должна быть больше 0 и меньше 10 миллиардов';
     }
 
     return res;
