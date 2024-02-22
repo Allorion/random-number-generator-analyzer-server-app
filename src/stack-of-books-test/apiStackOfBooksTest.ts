@@ -39,11 +39,14 @@ const checkReqData = (elem: IPostDataStackOfBooks, index: number, warning: strin
 
 }
 
-const startBookStackTest = async (dataTest: IPostDataStackOfBooks, indexTest: number, bookStackTest: BookStackTest): Promise<IResultBookStackTest[]> => {
+const startBookStackTest = async (dataTest: IPostDataStackOfBooks, indexTest: number): Promise<IResultBookStackTest[]> => {
 
-    // Изменяем свойства blockSize и alpha на новые значения, они общие для всех последовательностей одного файла
-    bookStackTest.blockSize = dataTest.blockSize;
-    bookStackTest.alpha = dataTest.alpha;
+    // Создаем экземпляр класса BookStackTest с заданной последовательностью бит, длиной блока и уровнем значимости
+    let bookStackTest = new BookStackTest(
+        [],
+        dataTest.blockSize,
+        dataTest.alpha
+    );
 
     const listResult: IResultBookStackTest[] = []
 
@@ -79,15 +82,8 @@ router.post('/start-analysis', async (req, res) => {
             res.status(500).json(warning)
         } else {
 
-            // Создаем экземпляр класса BookStackTest с заданной последовательностью бит, длиной блока и уровнем значимости
-            let bookStackTest = new BookStackTest(
-                [],
-                2,
-                0.05
-            );
-
             await Promise.all(postData.map(async (test, indexTest) => {
-                await startBookStackTest(test, indexTest, bookStackTest)
+                await startBookStackTest(test, indexTest)
                     .then(resp => {
 
                         let quantityCompletedTests = 0
