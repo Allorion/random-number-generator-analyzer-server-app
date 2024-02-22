@@ -3,6 +3,7 @@ import {IPostDataStackOfBooks, IRespDataStackOfBooks, IResultBookStackTest} from
 import {BookStackTest} from "./stack-of-books/BookStackTest";
 import {readTextFromFile} from "../global-elements/functions/readTextFromFile";
 import {FILE_DIRECTORY} from "../global-elements/fileDirectory";
+import {generateUniqueId} from "../global-elements/functions/generateUniqueId";
 
 const router = express.Router()
 
@@ -12,7 +13,7 @@ const checkReqData = (elem: IPostDataStackOfBooks, index: number, warning: strin
         warning.push(`В ${index} элементе запроса отсутствует название файла`)
     }
 
-    if (elem.blockSize === undefined || elem.blockSize === null || elem.blockSize <= 0) {
+    if (elem.blockSize === undefined || elem.blockSize === null || elem.blockSize <= 0 || elem.blockSize > 10) {
         warning.push(`В ${index} элементе запроса отсутствует или не верно задан размер блока`)
     }
 
@@ -103,7 +104,9 @@ router.post('/start-analysis', async (req, res) => {
                             blockSize: test.blockSize,
                             bitstreams: test.bitstreams,
                             numberOfBits: test.numberOfBits,
-                            quantityCompletedTests: quantityCompletedTests
+                            quantityCompletedTests: quantityCompletedTests,
+                            alpha: test.alpha,
+                            uid: generateUniqueId()
                         })
                     })
             }))

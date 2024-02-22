@@ -12,7 +12,9 @@ export  interface IRespDataStackOfBooks {
     blockSize: number,
     bitstreams: number,
     numberOfBits: number,
-    quantityCompletedTests: number
+    quantityCompletedTests: number,
+    alpha: number,
+    uid: string
 }
 
 export  interface IResultBookStackTest {
