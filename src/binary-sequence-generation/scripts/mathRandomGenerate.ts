@@ -50,7 +50,8 @@ export function mathRandomGenerate(length: number, frequency: number = 0.5, file
     try {
         for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
             // Генерируем буфер из единиц и нулей, используя функцию generateBinarySequenceChunk
-            const buffer = generateBinarySequenceChunk(chunkSize, frequency);
+            const buffer = generateBinarySequenceChunk(length < chunkSize ? length : chunkSize, frequency);
+
             // Используем функцию saveBinFile вместо saveBinFileHex
             saveBinFile(buffer, filePath);
         }

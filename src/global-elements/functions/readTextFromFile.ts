@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 
 // Функция, которая читает биты из файла, начиная с заданного смещения и длины
-function readBitsFromFile(startBit: number, bitCount: number, fileName: string): Buffer {
+export function readBitsFromFile(startBit: number, bitCount: number, fileName: string): Buffer {
     // Открываем файл для чтения, используя fs.openSync
     const fd = fs.openSync(fileName, 'r');
     // Вычисляем размер буфера, который нужен для хранения битов

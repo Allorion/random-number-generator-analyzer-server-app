@@ -54,7 +54,7 @@ export function generateCryptoSequence(length: number, filePath: string): {
     try {
         for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
             // Генерируем буфер из единиц и нулей, используя функцию generateBinarySequenceChunk
-            const buffer = generateCryptoChunk(chunkSize);
+            const buffer = generateCryptoChunk(length < chunkSize ? length : chunkSize);
             // Используем функцию saveBinFile вместо saveBinFileHex
             saveBinFile(buffer, filePath);
         }

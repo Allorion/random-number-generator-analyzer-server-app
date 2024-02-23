@@ -41,20 +41,17 @@ const checkReqData = (elem: IPostDataStackOfBooks, index: number, warning: strin
 
 const startBookStackTest = async (dataTest: IPostDataStackOfBooks, indexTest: number): Promise<IResultBookStackTest[]> => {
 
-    // Создаем экземпляр класса BookStackTest с заданной последовательностью бит, длиной блока и уровнем значимости
-    let bookStackTest = new BookStackTest(
-        [],
-        dataTest.blockSize,
-        dataTest.alpha
-    );
-
     const listResult: IResultBookStackTest[] = []
 
     for (let i = 0; i < dataTest.bitstreams; i++) {
 
-        // Считываем последовательность из файла. Изменяем свойства bits на новое
-        bookStackTest.bits = await readTextFromFile(dataTest.numberOfBits * i, dataTest.numberOfBits, dataTest.nameFile, FILE_DIRECTORY)
-
+        // Создаем экземпляр класса BookStackTest с заданной последовательностью бит, длиной блока и уровнем значимости
+        let bookStackTest = new BookStackTest(
+            // Считываем последовательность из файла. Изменяем свойства bits на новое
+            await readTextFromFile(dataTest.numberOfBits * i, dataTest.numberOfBits, dataTest.nameFile, FILE_DIRECTORY),
+            dataTest.blockSize,
+            dataTest.alpha
+        );
         // Запускаем тест и записываем в список результатов
         listResult.push(bookStackTest.runTest())
     }
