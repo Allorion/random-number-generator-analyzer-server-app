@@ -2,6 +2,7 @@ import express from "express";
 import {FILE_DIRECTORY} from "../global-elements/fileDirectory";
 import {readBitsFromFile} from "../global-elements/functions/readTextFromFile";
 import {Canvas, createCanvas} from "canvas";
+import {IPostDataStackOfBooks} from "../stack-of-books-test/types/TypeStackOfBooks";
 
 interface IReqData {
     nameFile: string,
@@ -53,11 +54,38 @@ const generateImg = async (data: IReqData): Promise<Canvas> => {
 
 }
 
-router.post('/test', async (req, res) => {
+const checkReqData = (elem: IReqData, warning: string[]) => {
+
+    if (elem.nameFile === undefined || elem.nameFile === null) {
+        warning.push(`Отсутствует название файла`)
+    }
+    if (elem.bitCount === undefined || elem.bitCount === null) {
+        warning.push(`Отсутствует количество бит`)
+    }
+    if (elem.zoom === undefined || elem.zoom === null) {
+        warning.push(`Отсутствует увеличение`)
+    }
+    if (elem.bitCount < 100) {
+        warning.push(`Количество бит последовательности должно быть не менее 100`)
+    }
+    if (elem.bitCount > 1000000) {
+        warning.push(`Количество бит последовательности должно быть не более 1млн`)
+    }
+    if (elem.zoom < 0) {
+        warning.push(`Увеличение должно быть больше 0`)
+    }
+    if (elem.zoom > 4) {
+        warning.push(`Максимальное увеличение 4`)
+    }
+}
+
+router.post('/start-analysis', async (req, res) => {
 
     const reqData: IReqData = req.body
 
     const warning: string[] = []
+
+    checkReqData(reqData, warning)
 
     if (warning.length === 0) {
         try {
