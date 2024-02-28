@@ -16,6 +16,7 @@ app.use('/api/files-binary-sequence', require('./src/files-binary-sequence/api/a
 app.use('/api/nist-tests', require('./src/nist-tests/apiNistTests'));
 app.use('/api/stack-of-books-tests', require('./src/stack-of-books-test/apiStackOfBooksTest'));
 app.use('/api/graph-distribution-test-on-a-plane', require('./src/graphical-distribution-test-on-a-plane/apiGraphicalDistributionTestOnPlane'));
+app.use('/api/count-repeats-test', require('./src/count-repeats/apiCountRepeats'));
 
 const port = process.env.PORT || 3001;
 app.listen(port, () => {
