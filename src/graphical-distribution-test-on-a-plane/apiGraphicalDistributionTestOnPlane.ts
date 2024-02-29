@@ -6,21 +6,67 @@ import {Canvas, createCanvas} from "canvas";
 interface IReqData {
     nameFile: string,
     bitCount: number,
-    zoom: 1 | 2 | 3 | 4,
     bitFlag: boolean,
+    fillingDensity: boolean,
 }
 
 const router = express.Router()
 
-const generateImg = async (data: IReqData): Promise<Canvas> => {
+const fillingDensityFunc = async (data: IReqData, canvas: Canvas, ctx: any): Promise<Canvas> => {
+    // Читаем биты из файла, используя функцию readBitsFromFile
+    const buffer: Buffer = readBitsFromFile(0, data.bitCount, FILE_DIRECTORY + data.nameFile);
 
-    const zoom = data.zoom
+    // Создаем объект для хранения координат и количества точек
+    const result: Record<string, { x: number; y: number; curVal: number }> = {};
+
+    // Находим максимальное количество точек в одной координате
+    let maxVal: number = 0;
+
+    // Проходим по буферу парами значений
+    for (let i: number = 0; i < buffer.length; i += 2) {
+        // Получаем координаты x и y из буфера
+        const x: number = buffer[i + 1];
+        const y: number = buffer[i];
+
+        // Формируем ключ из координат
+        const key: string = `${x}:${y}`;
+
+        // Если точка уже существует, увеличиваем счетчик на 1
+        if (result[key]) {
+            result[key].curVal++;
+
+            // Обновляем максимальное значение, если нужно
+            maxVal = Math.max(maxVal, result[key].curVal);
+        } else {
+            // Иначе, добавляем точку с счетчиком 1
+            result[key] = {curVal: 1, x, y};
+        }
+    }
+
+    // Проходим по всем точкам в результате
+    for (const [key, value] of Object.entries(result)) {
+        // Вычисляем прозрачность точки в зависимости от количества
+        const alpha: number = value.curVal / maxVal;
+
+        // Задаем цвет точки с прозрачностью
+        ctx.fillStyle = `rgba(0, 0, 0, ${alpha})`;
+
+        // Рисуем точку на холсте
+        ctx.fillRect(value.x, value.y, 1, 1);
+    }
+
+    // Возвращаем холст
+    return canvas;
+};
+
+
+const generateImg = async (data: IReqData): Promise<Canvas> => {
 
     let size = Math.floor(Math.sqrt(data.bitCount))
     let count = size * size
 
-    const width: number = data.bitFlag ? size : 256 * zoom
-    const height: number = data.bitFlag ? size : 256 * zoom
+    const width: number = data.bitFlag ? size : 256
+    const height: number = data.bitFlag ? size : 256
 
     const canvas = createCanvas(width, height);
 
@@ -58,29 +104,28 @@ const generateImg = async (data: IReqData): Promise<Canvas> => {
 
         return canvas
     } else {
-        // Читаем биты из файла, используя функцию readBitsFromFile
-        const buffer = readBitsFromFile(0, data.bitCount, FILE_DIRECTORY + data.nameFile);
 
-        buffer.forEach((opt, index) => {
-            if (index % 2 === 1) {
-                const x = opt;
-                const y = buffer[index - 1];
+        if (data.fillingDensity) {
 
-                ctx.fillStyle = "black"
-                ctx.fillRect(x * zoom, y * zoom, 1, 1);
+            return await fillingDensityFunc(data, canvas, ctx)
 
-                // // Начинаем новый путь
-                // ctx.beginPath();
-                // // Рисуем окружность с центром в координатах точки и радиусом 1 пикселей
-                // ctx.arc(x * zoom, y * zoom, 1, 0, Math.PI * 2);
-                // // Закрываем путь
-                // ctx.closePath();
-                // // Обводим путь
-                // ctx.stroke();
-            }
-        })
+        } else {
 
-        return canvas
+            // Читаем биты из файла, используя функцию readBitsFromFile
+            const buffer = readBitsFromFile(0, data.bitCount, FILE_DIRECTORY + data.nameFile);
+
+            buffer.forEach((opt, index) => {
+                if (index % 2 === 1) {
+                    const x = opt;
+                    const y = buffer[index - 1];
+
+                    ctx.fillStyle = "black"
+                    ctx.fillRect(x, y, 1, 1);
+                }
+            })
+
+            return canvas
+        }
     }
 }
 
@@ -92,20 +137,11 @@ const checkReqData = (elem: IReqData, warning: string[]) => {
     if (elem.bitCount === undefined || elem.bitCount === null) {
         warning.push(`Отсутствует количество бит`)
     }
-    if (elem.zoom === undefined || elem.zoom === null) {
-        warning.push(`Отсутствует увеличение`)
-    }
     if (elem.bitCount < 100) {
         warning.push(`Количество бит последовательности должно быть не менее 100`)
     }
     if (elem.bitCount > 1006000000) {
         warning.push(`Количество бит последовательности должно быть не более 1млн`)
-    }
-    if (elem.zoom < 0) {
-        warning.push(`Увеличение должно быть больше 0`)
-    }
-    if (elem.zoom > 4) {
-        warning.push(`Максимальное увеличение 4`)
     }
 }
 
