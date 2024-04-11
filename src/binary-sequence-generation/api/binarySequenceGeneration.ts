@@ -9,6 +9,9 @@ import {mathRandomGenerate} from "../scripts/mathRandomGenerate";
 import {
     generateCryptoSequence,
 } from "../scripts/cryptoGetRandomValuesGenerate";
+import {linearCongruentialGenerator} from "../scripts/LinearCongruentialGenerator";
+import {processFile} from "../scripts/urgpuRandomGenerate";
+import {getFilesInDirectory} from "../../files-binary-sequence/scripts/getFilesInDirectory";
 
 const router = express.Router()
 
@@ -17,7 +20,7 @@ const generation = (
         length: number,
         frequency?: number
     },
-    method: 'mtg' | 'mathRandGen' | 'cryptoSequence' | 'binSeqGenWithFrequencySelect',
+    method: 'mtg' | 'mathRandGen' | 'cryptoSequence' | 'binSeqGenWithFrequencySelect' | 'linearCongruentialGenerator' | 'convertNumberToBuffer',
 ) => {
 
     const res = {
@@ -40,6 +43,14 @@ const generation = (
                     break;
                 case "cryptoSequence":
                     result = generateCryptoSequence(postData.length, 'src/binary-sequence-generation/storage-files/' + filePath)
+                    break;
+                case "linearCongruentialGenerator":
+                    result = linearCongruentialGenerator(postData.length, 'src/binary-sequence-generation/storage-files/' + filePath)
+                    break;
+                case "convertNumberToBuffer":
+                    // Использование функции
+                    const inputFilePath = 'src/binary-sequence-generation/storage-files/input.txt'; // Путь к входному файлу
+                    result = processFile(inputFilePath, 'src/binary-sequence-generation/storage-files/' + filePath);
                     break;
             }
 
@@ -102,6 +113,37 @@ router.post('/crypto-random-generate', (req, res) => {
     const result = generation(postData, 'cryptoSequence')
 
     res.status(result.status).json(result)
+
+});
+
+// Генерация бинарной последовательности методом Линейный конгруэнтный ГПСЧ
+router.post('/linear-congruential-generator', (req, res) => {
+
+    const postData: {
+        length: number,
+    } = req.body;
+
+    const result = generation(postData, 'linearCongruentialGenerator')
+
+    res.status(result.status).json(result)
+
+});
+
+router.get('/convert-number-to-buffer', (req, res) => {
+
+    const postData: {
+        length: number,
+    } = {
+        length: 1
+    };
+
+    const result = generation(postData, 'convertNumberToBuffer')
+
+    res.status(result.status).json(result)
+
+    res.status(200).json({
+        status: 200,
+    })
 
 });
 

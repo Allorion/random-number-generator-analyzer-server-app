@@ -2,22 +2,48 @@
 // Скрип для генерации файла с бинарной последовательностью с помощью модуля MersenneTwister19937 из random-js
 //**********************************************************************************************************************
 
-
-import {MersenneTwister19937, integer} from 'random-js';
 import {saveBinFile} from "./dop-scripts/saveBinFile";
 
+class LinearCongruentialGenerator {
+    private modulus: number;
+    private multiplier: number;
+    private increment: number;
+    private seed: number;
+
+    constructor(modulus: number, multiplier: number, increment: number, seed: number) {
+        this.modulus = modulus;
+        this.multiplier = multiplier;
+        this.increment = increment;
+        this.seed = seed;
+    }
+
+    next(): 0 | 1 {
+        this.seed = (this.multiplier * this.seed + this.increment) % this.modulus;
+        return (this.seed / this.modulus) < 0.5 ? 0 : 1;
+    }
+}
+
 // Функция, которая генерирует буфер из единиц и нулей заданной длины
-function generateMersenneTwisterChunk(length: number): Buffer {
-    const engine = MersenneTwister19937.autoSeed();
+function generateLinearCongruentialChunk(length: number): Buffer {
+
+    // Параметры для генератора случайных чисел
+    // const modulus = Math.pow(2, 32) // Модуль
+    const modulus = 67 // Модуль 997
+    const multiplier = 45;    // Множитель 165
+    const increment = 21;         // Приращение 409
+    let seed = 2;      // Начальное значение (семя) 62176
+
     // Создаем буфер нужного размера, используя Buffer.alloc
     const buffer = Buffer.alloc(Math.ceil(length / 8));
     // Создаем переменную для хранения текущего байта
     let byte = 0;
     // Создаем переменную для хранения текущего смещения в буфере
     let offset = 0;
+    // Определяем класс
+    const lcg = new LinearCongruentialGenerator(modulus, multiplier, increment, seed);
     // Проходим по длине последовательности
     for (let i = 0; i < length; i++) {
-        const bit = integer(0, 1)(engine);
+        const bit: 0 | 1 = lcg.next();
         // Добавляем бит к текущему байту, сдвигая его на один разряд влево
         byte = (byte << 1) | bit;
         // Проверяем, если мы сгенерировали 8 бит, то есть один байт
@@ -41,17 +67,18 @@ function generateMersenneTwisterChunk(length: number): Buffer {
     return buffer;
 }
 
-export function mersenneTwisterGenerate(length: number, filePath: string): {
+export function linearCongruentialGenerator(length: number, filePath: string): {
     flag: boolean,
     text: string
 } {
+
     const chunkSize = 1000000; // Размер порции данных
     const totalChunks = Math.ceil(length / chunkSize);
 
     try {
         for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
             // Генерируем буфер из единиц и нулей, используя функцию generateBinarySequenceChunk
-            const buffer = generateMersenneTwisterChunk(length < chunkSize ? length : chunkSize);
+            const buffer = generateLinearCongruentialChunk(length < chunkSize ? length : chunkSize);
             // Используем функцию saveBinFile вместо saveBinFileHex
             saveBinFile(buffer, filePath);
         }
