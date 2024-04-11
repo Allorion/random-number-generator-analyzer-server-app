@@ -1,14 +1,14 @@
 //**********************************************************************************************************************
-// Скрип для генерации файла с бинарной последовательностью с помощью модуля MersenneTwister19937 из random-js
+// Скрип для генерации файла с бинарной последовательностью с помощью метода генерации Линейный конгруэнтный ГПСЧ (LCPRNG)
 //**********************************************************************************************************************
 
 import {saveBinFile} from "./dop-scripts/saveBinFile";
 
 class LinearCongruentialGenerator {
-    private modulus: number;
-    private multiplier: number;
-    private increment: number;
-    private seed: number;
+    private readonly modulus: number; // Модуль
+    private readonly multiplier: number; // Множитель
+    private readonly increment: number; // Приращение
+    private seed: number; // Начальное значение (семя)
 
     constructor(modulus: number, multiplier: number, increment: number, seed: number) {
         this.modulus = modulus;
@@ -24,14 +24,7 @@ class LinearCongruentialGenerator {
 }
 
 // Функция, которая генерирует буфер из единиц и нулей заданной длины
-function generateLinearCongruentialChunk(length: number): Buffer {
-
-    // Параметры для генератора случайных чисел
-    // const modulus = Math.pow(2, 32) // Модуль
-    const modulus = 67 // Модуль 997
-    const multiplier = 45;    // Множитель 165
-    const increment = 21;         // Приращение 409
-    let seed = 2;      // Начальное значение (семя) 62176
+function generateLinearCongruentialChunk(length: number, modulus: number, multiplier: number, increment: number, seed: number): Buffer {
 
     // Создаем буфер нужного размера, используя Buffer.alloc
     const buffer = Buffer.alloc(Math.ceil(length / 8));
@@ -67,7 +60,7 @@ function generateLinearCongruentialChunk(length: number): Buffer {
     return buffer;
 }
 
-export function linearCongruentialGenerator(length: number, filePath: string): {
+export function linearCongruentialGenerator(length: number, filePath: string, modulus: number, multiplier: number, increment: number, seed: number): {
     flag: boolean,
     text: string
 } {
@@ -78,7 +71,7 @@ export function linearCongruentialGenerator(length: number, filePath: string): {
     try {
         for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
             // Генерируем буфер из единиц и нулей, используя функцию generateBinarySequenceChunk
-            const buffer = generateLinearCongruentialChunk(length < chunkSize ? length : chunkSize);
+            const buffer = generateLinearCongruentialChunk((length < chunkSize ? length : chunkSize), modulus, multiplier, increment, seed);
             // Используем функцию saveBinFile вместо saveBinFileHex
             saveBinFile(buffer, filePath);
         }

@@ -11,14 +11,17 @@ import {
 } from "../scripts/cryptoGetRandomValuesGenerate";
 import {linearCongruentialGenerator} from "../scripts/LinearCongruentialGenerator";
 import {processFile} from "../scripts/urgpuRandomGenerate";
-import {getFilesInDirectory} from "../../files-binary-sequence/scripts/getFilesInDirectory";
 
 const router = express.Router()
 
 const generation = (
     postData: {
-        length: number,
-        frequency?: number
+        length: number;
+        frequency?: number;
+        modulus?: number;
+        multiplier?: number;
+        increment?: number;
+        seed?: number;
     },
     method: 'mtg' | 'mathRandGen' | 'cryptoSequence' | 'binSeqGenWithFrequencySelect' | 'linearCongruentialGenerator' | 'convertNumberToBuffer',
 ) => {
@@ -45,7 +48,14 @@ const generation = (
                     result = generateCryptoSequence(postData.length, 'src/binary-sequence-generation/storage-files/' + filePath)
                     break;
                 case "linearCongruentialGenerator":
-                    result = linearCongruentialGenerator(postData.length, 'src/binary-sequence-generation/storage-files/' + filePath)
+                    if (postData.modulus === undefined || postData.multiplier === undefined || postData.increment === undefined || postData.seed === undefined) {
+                        result = {
+                            flag: false,
+                            text: `modulus или multiplier или increment или seed не переданы`
+                        }; // Вернуть false в случае ошибки
+                    } else {
+                        result = linearCongruentialGenerator(postData.length, 'src/binary-sequence-generation/storage-files/' + filePath, postData.modulus, postData.multiplier, postData.increment, postData.seed)
+                    }
                     break;
                 case "convertNumberToBuffer":
                     // Использование функции
@@ -121,6 +131,10 @@ router.post('/linear-congruential-generator', (req, res) => {
 
     const postData: {
         length: number,
+        modulus: number,
+        multiplier: number,
+        increment: number,
+        seed: number
     } = req.body;
 
     const result = generation(postData, 'linearCongruentialGenerator')
